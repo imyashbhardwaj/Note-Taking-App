@@ -24,6 +24,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# Ignore env files
-.env
-.env.loca
+
