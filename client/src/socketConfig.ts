@@ -1,6 +1,8 @@
 const socketCOnnectionPath = '/socket';
-const serverUrl = 'http://localhost:3001';
+import { constants } from '../constants';
 
+const { BACKEND_SERVER } = constants;
+const serverUrl = BACKEND_SERVER.URL;
 const socket = io(serverUrl, {
   path: socketCOnnectionPath,
 });

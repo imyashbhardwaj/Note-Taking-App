@@ -2,9 +2,9 @@ const constants = {
   NOTE_TITLE_UPDATE_EVENT_NAME: "Note Name Update",
   NOTE_CONTENT_UPDATE_EVENT_NAME: "Note Content Update",
   SERVER_NOTE_STATE_EVENT_NAME: "Server State",
-  UPDATE_EVENT_THROTTLE_TIME_IN_MS: 100,
+  UPDATE_EVENT_THROTTLE_TIME_IN_MS: 50,
   BACKEND_SERVER:{
-    URL: `http://localhost:${import.meta.env.VITE_SERVER_PORT}`,
+    URL: `http://localhost:${import.meta.env.VITE_BACKEND_SERVER_PORT}`,
     GET_NOTE_ROUTE: "/getNote",
     GET_NOTES_ROUTE: "/getNotes",
     UPDATE_NOTE_ROUTE: "/updateNote",

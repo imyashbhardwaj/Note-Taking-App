@@ -8,7 +8,7 @@ const noteTitleUpdateEventName = "Note Name Update";
 const noteContentUpdateEventName = "Note Content Update";
 let io;
 
-const clientStateUpdateIntervalInMilliSeconds  = 200;
+const clientStateUpdateIntervalInMilliSeconds  = 100;
 function configureSocketEventListeners(socket, ioInstance) {
   io = ioInstance;
   socket.on(noteTitleUpdateEventName, (updateMsg) =>
