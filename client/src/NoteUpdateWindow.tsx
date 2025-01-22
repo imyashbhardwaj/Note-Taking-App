@@ -28,7 +28,8 @@ function NoteUpdateWindow() {
   const navigate = useNavigate();
 
   function setNoteState(noteState: noteType) {
-    const { title, content } = noteState;
+    console.log(`got serverState ${JSON.stringify(noteState)}`);
+	const { title, content } = noteState;
     if (title) setNoteTitle(title);
     if (content) setNoteContent(content);
   }

@@ -6,9 +6,13 @@
 			"log_date_format": "YYYY-MM-DD HH:mm Z",
 			"instances": "1",
 			"env": {
-				"NODE_ENV": "production"
+				"NODE_ENV": "production",
+				"VITE_BACKEND_SERVER_PORT" : 3001,
+"MONGODB_SERVER_PORT" : 27017,
+"MONGO_URI" : "mongodb+srv://bhardwajy60:Bhar%409871320823@cluster0.fcayb.mongodb.net/note?retryWrites=true&w=majority&appName=Cluster0"
 			},
-			"max_memory_restart": "1G"
+			"max_memory_restart": "1G",
+			"env_file": "server/.env"
 		},
         {
 			"name": "Client",

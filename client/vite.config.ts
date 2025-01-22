@@ -15,5 +15,13 @@ export default defineConfig({
   },
   define: {
     'process.env': process.env, // Make variables available to the client
+  },
+  server: {
+    port:3000,
+    host: true, // Exposes the server to external addresses
+    hmr: {
+	 host: '35.209.89.38', // Replace this with your public IP or do
+	 port: 3000, // If you're using HTTPS, specify 443; otherwise, use the port your server is exposed on
+    }, // Ensure it's running on port 80
   }
 });

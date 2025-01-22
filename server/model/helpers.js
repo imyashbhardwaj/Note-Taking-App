@@ -28,6 +28,7 @@ async function updateANoteWithGivenId(id, updatedProps) {
   try {
     const filter = { id };
     const update = { $set: updatedProps };
+	  console.log("saving Note", updatedProps)
     await NoteModel.updateOne(filter, update);
   } catch (error) {
     throw new Error(`Some Error while updating the note ${error}`);

@@ -17,14 +17,14 @@ app.use(cors());
 
 const server = createServer(app);
 const io = new Server(server, {
-    path: "/socket",
+    path: "/api/socket",
     cors: {
         origin: true
       }
 });
 
-app.use("/", noteCreationRouter);
-app.use("/", getNotesRouter);
+app.use("/api", noteCreationRouter);
+app.use("/api", getNotesRouter);
 
 io.on("connection", socketHandler(io));
 

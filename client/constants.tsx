@@ -4,7 +4,7 @@ const constants = {
   SERVER_NOTE_STATE_EVENT_NAME: "Server State",
   UPDATE_EVENT_THROTTLE_TIME_IN_MS: 50,
   BACKEND_SERVER:{
-    URL: `http://localhost:${import.meta.env.VITE_BACKEND_SERVER_PORT}`,
+    URL: `http://35.209.161.69/api`,
     GET_NOTE_ROUTE: "/getNote",
     GET_NOTES_ROUTE: "/getNotes",
     UPDATE_NOTE_ROUTE: "/updateNote",
