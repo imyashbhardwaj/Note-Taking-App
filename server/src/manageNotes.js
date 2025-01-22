@@ -1,6 +1,7 @@
 const { updateANoteWithGivenId } = require("../model/helpers");
 
 const notesState = {};
+const lastSyncedNotesState = {};
 
 const dbStateDeleteTimeoutInMilliSeconds = 5000;
 const dbStateUpdateTimeoutInMilliSeconds = 1000;
@@ -26,20 +27,38 @@ function clearSavedNotesData() {
   }
 }
 
-function handleNotePropUpdate(updateMsg, socket, property) {
+function updateNoteDetailsInObject(
+  updateMsg,
+  noteObject,
+  { property, skipDbProp = false }
+) {
+  const { updatedValue, noteId } = updateMsg;
+  noteObject[noteId] ??= {};
+  noteObject[noteId][property] = updatedValue;
+  if (!skipDbProp) noteObject[noteId].isUpdatedInDb = false;
+}
+
+function updateNotesStateObject(updateMsg, config) {
+  updateNoteDetailsInObject(updateMsg, notesState, config);
+}
+
+function updateLastSyncedNotesStateObject(updateMsg, config) {
+  config.skipDbProp = true;
+  updateNoteDetailsInObject(updateMsg, lastSyncedNotesState, config);
+}
+
+function handleNotePropUpdate(updateMsg, socket, config) {
   const { updatedValue, noteId } = updateMsg;
   socket.join(noteId);
-  notesState[noteId] ??= {};
-  notesState[noteId][property] = updatedValue;
-  notesState[noteId].isUpdatedInDb = false;
+  updateNotesStateObject(updateMsg, config);
 }
 
 function handleNoteTitleNameUpdate(updateMsg, socket) {
-  handleNotePropUpdate(updateMsg, socket, 'title');
+  handleNotePropUpdate(updateMsg, socket, { property: "title" });
 }
 
 function handleNoteContentNameUpdate(updateMsg, socket) {
-  handleNotePropUpdate(updateMsg, socket, 'content');
+  handleNotePropUpdate(updateMsg, socket, { property: "content" });
 }
 
 function getNotesStateForNoteId(noteId) {
@@ -50,14 +69,19 @@ function getNotesState() {
   return JSON.parse(JSON.stringify(notesState));
 }
 
+function getLastSyncedNotesState() {
+  return JSON.parse(JSON.stringify(lastSyncedNotesState));
+}
+
 module.exports = {
   saveAllNotesState,
   handleNoteTitleNameUpdate,
   handleNoteContentNameUpdate,
   getNotesStateForNoteId,
   getNotesState,
+  getLastSyncedNotesState,
+  updateLastSyncedNotesStateObject
 };
 
 setInterval(saveAllNotesState, dbStateUpdateTimeoutInMilliSeconds);
 setInterval(clearSavedNotesData, dbStateDeleteTimeoutInMilliSeconds);
-
