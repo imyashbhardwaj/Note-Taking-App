@@ -23,19 +23,30 @@ const {
 function NoteUpdateWindow() {
   const [noteTitle, setNoteTitle] = useState('');
   const [noteContent, setNoteContent] = useState('');
-  const [currentNote, setCurrentNote] = useState({title:'', content:'', id: ''});
+  const [currentNote, setCurrentNote] = useState({
+    title: '',
+    content: '',
+    id: '',
+  });
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  let isTyping = false;
+
+  function applyServerSideChanges(noteState: noteType) {
+    if (isTyping) return;
+
+    setNoteState(noteState);
+  }
 
   function setNoteState(noteState: noteType) {
-    console.log(`got serverState ${JSON.stringify(noteState)}`);
-	const { title, content } = noteState;
+    console.log(`setting serverState ${JSON.stringify(noteState)}`);
+    const { title, content } = noteState;
     if (title) setNoteTitle(title);
     if (content) setNoteContent(content);
   }
 
   function setupComponentEffects() {
-    setSocketListener(serverUpdateEventName, setNoteState);
+    setSocketListener(serverUpdateEventName, applyServerSideChanges);
     getNote();
   }
 
@@ -62,6 +73,9 @@ function NoteUpdateWindow() {
   }
 
   const createThrottledEventEmitter = (eventName: string) => {
+    setTimeout(() => {
+      isTyping = false;
+    }, 50);
     return useCallback(
       throttle((noteChangeObject: { updatedValue: string; noteId: string }) => {
         emitSocketEvent(eventName, noteChangeObject);
@@ -108,7 +122,7 @@ function NoteUpdateWindow() {
 
   useEffect(setupComponentEffects, []);
 
-  function handleCopyUrl () {
+  function handleCopyUrl() {
     const currentUrl = window.location.href; // Get the current window URL
     navigator.clipboard
       .writeText(currentUrl)
@@ -118,31 +132,32 @@ function NoteUpdateWindow() {
       .catch((error) => {
         console.error('Failed to copy URL:', error);
       });
-  };
+  }
 
   return (
     <div className="wide_content" id="NoteUpdateWindowParent">
-      
-        <Button id="homePageButton" onClick={routeToHome}>
-          Go back
-        </Button>
-        <h1>You can Create/Modify your note below:</h1>
-        **Invite your Friends to collaborate on note, just send them the url <Button onClick={handleCopyUrl}>Copy Url</Button>
-        <br /><br />
-        Note Title:
-        <Input
-          type="text"
-          placeholder="Note Name"
-          onInput={handleNoteTitleInputChangeEvent}
-          value={noteTitle}
-        />
-        <br />
-        Note Content:
-        <Textarea
-          placeholder="Type your Note here."
-          onInput={handleNoteContentInputChangeEvent}
-          value={noteContent}
-        />
+      <Button id="homePageButton" onClick={routeToHome}>
+        Go back
+      </Button>
+      <h1>You can Create/Modify your note below:</h1>
+      **Invite your Friends to collaborate on note, just send them the url{' '}
+      <Button onClick={handleCopyUrl}>Copy Url</Button>
+      <br />
+      <br />
+      Note Title:
+      <Input
+        type="text"
+        placeholder="Note Name"
+        onInput={handleNoteTitleInputChangeEvent}
+        value={noteTitle}
+      />
+      <br />
+      Note Content:
+      <Textarea
+        placeholder="Type your Note here."
+        onInput={handleNoteContentInputChangeEvent}
+        value={noteContent}
+      />
     </div>
   );
 }
