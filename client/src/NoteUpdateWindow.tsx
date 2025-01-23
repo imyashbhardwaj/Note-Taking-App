@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useCallback } from 'react';
@@ -29,32 +29,47 @@ function NoteUpdateWindow() {
     content: '',
     id: '',
   });
+  const noteTitleRef = useRef(noteTitle);
+  const noteContentRef = useRef(noteContent);
+
+  useEffect(() => {
+    noteTitleRef.current = noteTitle;
+    noteContentRef.current = noteContent;
+  }, [noteTitle, noteContent]);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   let isTyping = false;
 
   function applyServerSideChanges(noteState: noteType) {
-    console.log('got serverstate', noteState, isTyping);
-    if (isTyping) {
-      console.log('not updating because user is typing');
-      return;
-    }
+    console.log('got serverstate', noteState);
+    // if (isTyping) {
+    //   console.log('not updating because user is typing');
+    //   return;
+    // }
     const { title: serverSideTitle, content: serverSideContent } = noteState;
-    if (serverSideTitle && noteTitle.includes(serverSideTitle)) {
+    const nValues = [undefined, ''];
+    const shouldIgnoreTitleUpdate =
+      !nValues.includes(serverSideTitle) &&
+      noteTitleRef.current.includes(serverSideTitle);
+    const shouldIgnoreContentUpdate =
+      !nValues.includes(serverSideContent) &&
+      noteContentRef.current.includes(serverSideContent);
+    if (shouldIgnoreTitleUpdate) {
       delete noteState.title;
     }
-    if (serverSideContent && noteTitle.includes(serverSideContent)) {
+    if (shouldIgnoreContentUpdate) {
       delete noteState.content;
     }
-    if(noteState.title || noteState.content) return setNoteState(noteState);
+    if (noteState.title != undefined || noteState.content != undefined)
+      return setNoteState(noteState);
     console.log('skipping notestate', noteState);
   }
 
   function setNoteState(noteState: noteType) {
     console.log(`setting serverState ${JSON.stringify(noteState)}`);
     const { title, content } = noteState;
-    if (title) setNoteTitle(title);
-    if (content) setNoteContent(content);
+    if (title != undefined) setNoteTitle(title);
+    if (content != undefined) setNoteContent(content);
   }
 
   function setupComponentEffects() {
@@ -86,10 +101,8 @@ function NoteUpdateWindow() {
 
   const createThrottledEventEmitter = (eventName: string) => {
     clearTimeout(typingTimeout);
-    console.log('setting is typing', isTyping, typingTimeout);
     isTyping = true;
     typingTimeout = setTimeout(() => {
-      console.log('setting timeout false', typingTimeout);
       isTyping = false;
     }, 300);
     return useCallback(
