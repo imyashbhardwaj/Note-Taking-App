@@ -33,8 +33,10 @@ function NoteUpdateWindow() {
   let isTyping = false;
 
   function applyServerSideChanges(noteState: noteType) {
-    if (isTyping) return;
-
+   console.log('got serverstate',noteState, isTyping);
+    if (isTyping) {console.log("returning because typing");
+	 return};
+	console.log("typing",isTyping);
     setNoteState(noteState);
   }
 
@@ -71,11 +73,17 @@ function NoteUpdateWindow() {
   function routeToHome() {
     navigate('/');
   }
+  let typingTimeout;
 
   const createThrottledEventEmitter = (eventName: string) => {
-    setTimeout(() => {
+
+   clearTimeout(typingTimeout);  
+   console.log('setting is typing',isTyping,typingTimeout);
+   isTyping = true;
+   typingTimeout = setTimeout(() => {
+	console.log("setting timeout false", typingTimeout);
       isTyping = false;
-    }, 50);
+    }, 300);
     return useCallback(
       throttle((noteChangeObject: { updatedValue: string; noteId: string }) => {
         emitSocketEvent(eventName, noteChangeObject);
