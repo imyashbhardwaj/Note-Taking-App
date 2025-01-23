@@ -42,17 +42,13 @@ function NoteUpdateWindow() {
 
   function applyServerSideChanges(noteState: noteType) {
     console.log('got serverstate', noteState);
-    // if (isTyping) {
-    //   console.log('not updating because user is typing');
-    //   return;
-    // }
     const { title: serverSideTitle, content: serverSideContent } = noteState;
-    const nValues = [undefined, ''];
+    const falseValues = [undefined, ''];
     const shouldIgnoreTitleUpdate =
-      !nValues.includes(serverSideTitle) &&
+      !falseValues.includes(serverSideTitle) &&
       noteTitleRef.current.includes(serverSideTitle);
     const shouldIgnoreContentUpdate =
-      !nValues.includes(serverSideContent) &&
+      !falseValues.includes(serverSideContent) &&
       noteContentRef.current.includes(serverSideContent);
     if (shouldIgnoreTitleUpdate) {
       delete noteState.title;

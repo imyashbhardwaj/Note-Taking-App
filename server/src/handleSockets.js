@@ -42,7 +42,7 @@ function sendUpdatedStateToClients() {
     if(content !== undefined && lastSyncedNote?.content != content){
       updatedNoteProps.content = content;
       anyStateUpdated = true;
-      const updateMsg = { updatedValue : title, noteId }
+      const updateMsg = { updatedValue : content, noteId }
       updateLastSyncedNotesStateObject(updateMsg, {property: "content"})
     }
 
@@ -53,7 +53,7 @@ function sendUpdatedStateToClients() {
     // Emit event to only specific rooms
     // i.e to specific users in that room or working on that note
     // this is an optimization to send only required data to each client
-    console.log("send state", updatedNoteProps, noteId);
+    console.log("sending state to clients", updatedNoteProps, noteId);
     io.in(noteId).emit("Server State", updatedNoteProps);
   });
 }
