@@ -1,3 +1,3 @@
-type noteType = { title: string, content: string, id?: string};
+type noteType = { title?: string, content?: string, id?: string};
 
 export type { noteType };

@@ -12,13 +12,14 @@ import { useNavigate } from 'react-router-dom';
 import { constants } from '../constants';
 
 const { BACKEND_SERVER } = constants;
-
 const {
   NOTE_CONTENT_UPDATE_EVENT_NAME: noteContentUpdateEventName,
   NOTE_TITLE_UPDATE_EVENT_NAME: noteTitleUpdateEventName,
   SERVER_NOTE_STATE_EVENT_NAME: serverUpdateEventName,
   UPDATE_EVENT_THROTTLE_TIME_IN_MS: updateEventThrottleIntervalInMs,
 } = constants;
+
+let typingTimeout: NodeJS.Timeout;
 
 function NoteUpdateWindow() {
   const [noteTitle, setNoteTitle] = useState('');
@@ -33,11 +34,20 @@ function NoteUpdateWindow() {
   let isTyping = false;
 
   function applyServerSideChanges(noteState: noteType) {
-   console.log('got serverstate',noteState, isTyping);
-    if (isTyping) {console.log("returning because typing");
-	 return};
-	console.log("typing",isTyping);
-    setNoteState(noteState);
+    console.log('got serverstate', noteState, isTyping);
+    if (isTyping) {
+      console.log('not updating because user is typing');
+      return;
+    }
+    const { title: serverSideTitle, content: serverSideContent } = noteState;
+    if (serverSideTitle && noteTitle.includes(serverSideTitle)) {
+      delete noteState.title;
+    }
+    if (serverSideContent && noteTitle.includes(serverSideContent)) {
+      delete noteState.content;
+    }
+    if(noteState.title || noteState.content) return setNoteState(noteState);
+    console.log('skipping notestate', noteState);
   }
 
   function setNoteState(noteState: noteType) {
@@ -73,15 +83,13 @@ function NoteUpdateWindow() {
   function routeToHome() {
     navigate('/');
   }
-  let typingTimeout;
 
   const createThrottledEventEmitter = (eventName: string) => {
-
-   clearTimeout(typingTimeout);  
-   console.log('setting is typing',isTyping,typingTimeout);
-   isTyping = true;
-   typingTimeout = setTimeout(() => {
-	console.log("setting timeout false", typingTimeout);
+    clearTimeout(typingTimeout);
+    console.log('setting is typing', isTyping, typingTimeout);
+    isTyping = true;
+    typingTimeout = setTimeout(() => {
+      console.log('setting timeout false', typingTimeout);
       isTyping = false;
     }, 300);
     return useCallback(
