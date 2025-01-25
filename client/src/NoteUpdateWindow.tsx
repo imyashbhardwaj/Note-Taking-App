@@ -58,7 +58,6 @@ function NoteUpdateWindow() {
     }
     if (noteState.title != undefined || noteState.content != undefined)
       return setNoteState(noteState);
-    console.log('skipping notestate', noteState);
   }
 
   function setNoteState(noteState: noteType) {
@@ -133,13 +132,13 @@ function NoteUpdateWindow() {
     handleNoteChange(noteChangeObject);
   };
 
-  function handleNoteTitleInputChangeEvent(
+  function handleNoteTitleChangeEvent(
     event: React.FormEvent<HTMLInputElement>
   ) {
     handleInputChangeEvent(event, setNoteTitle, handleNoteTitleChange);
   }
 
-  function handleNoteContentInputChangeEvent(
+  function handleNoteContentChangeEvent(
     event: React.FormEvent<HTMLTextAreaElement>
   ) {
     handleInputChangeEvent(event, setNoteContent, handleNoteContentChange);
@@ -173,14 +172,14 @@ function NoteUpdateWindow() {
       <Input
         type="text"
         placeholder="Note Name"
-        onInput={handleNoteTitleInputChangeEvent}
+        onChange={handleNoteTitleChangeEvent}
         value={noteTitle}
       />
       <br />
       Note Content:
       <Textarea
         placeholder="Type your Note here."
-        onInput={handleNoteContentInputChangeEvent}
+        onChange={handleNoteContentChangeEvent}
         value={noteContent}
       />
     </div>
