@@ -4,7 +4,8 @@ const constants = {
   SERVER_NOTE_STATE_EVENT_NAME: "Server State",
   UPDATE_EVENT_THROTTLE_TIME_IN_MS: 60,
   BACKEND_SERVER:{
-    URL: `http://35.209.161.69/api`,
+    SOCKET_HOST: "http://127.0.0.1",
+    URL: `http://localhost:3001/api`,
     GET_NOTE_ROUTE: "/getNote",
     GET_NOTES_ROUTE: "/getNotes",
     UPDATE_NOTE_ROUTE: "/updateNote",
