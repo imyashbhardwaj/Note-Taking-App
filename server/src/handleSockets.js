@@ -3,16 +3,17 @@ const {
   handleNoteContentNameUpdate,
   getNotesState,
   getLastSyncedNotesState,
-  updateLastSyncedNotesStateObject
+  updateLastSyncedNotesStateObject,
 } = require("./manageNotes");
 
 const noteTitleUpdateEventName = "Note Name Update";
 const noteContentUpdateEventName = "Note Content Update";
 const serverUpdateEventName = "Server State";
+const joinRoomEventName = "joinRoom";
 
 let io;
 
-const clientStateUpdateIntervalInMilliSeconds  = 200;
+const clientStateUpdateIntervalInMilliSeconds = 300;
 function configureSocketEventListeners(socket, ioInstance) {
   io = ioInstance;
   console.log("a user connected");
@@ -25,7 +26,14 @@ function configureSocketEventListeners(socket, ioInstance) {
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
-  setInterval(sendUpdatedStateToClients, clientStateUpdateIntervalInMilliSeconds);
+  socket.on(joinRoomEventName, (updateMsg) => {
+    const { noteId } = updateMsg;
+    socket.join(noteId);
+  });
+  setInterval(
+    sendUpdatedStateToClients,
+    clientStateUpdateIntervalInMilliSeconds
+  );
 }
 function sendUpdatedStateToClients() {
   const notesState = getNotesState();
@@ -35,20 +43,20 @@ function sendUpdatedStateToClients() {
     const updatedNoteProps = {};
     let anyStateUpdated = false;
     const { title, content } = noteProps;
-    if(title !== undefined && lastSyncedNote?.title != title){
+    if (title !== undefined && lastSyncedNote?.title != title) {
       updatedNoteProps.title = title;
       anyStateUpdated = true;
-      const updateMsg = { updatedValue : title, noteId }
-      updateLastSyncedNotesStateObject(updateMsg, {property: "title"})
+      const updateMsg = { updatedValue: title, noteId };
+      updateLastSyncedNotesStateObject(updateMsg, { property: "title" });
     }
-    if(content !== undefined && lastSyncedNote?.content != content){
+    if (content !== undefined && lastSyncedNote?.content != content) {
       updatedNoteProps.content = content;
       anyStateUpdated = true;
-      const updateMsg = { updatedValue : content, noteId }
-      updateLastSyncedNotesStateObject(updateMsg, {property: "content"})
+      const updateMsg = { updatedValue: content, noteId };
+      updateLastSyncedNotesStateObject(updateMsg, { property: "content" });
     }
 
-    if(!anyStateUpdated){
+    if (!anyStateUpdated) {
       return;
     }
 

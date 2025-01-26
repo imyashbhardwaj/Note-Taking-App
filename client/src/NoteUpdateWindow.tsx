@@ -1,5 +1,6 @@
 import axios from 'axios';
 import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -15,12 +16,13 @@ const {
   NOTE_TITLE_UPDATE_EVENT_NAME: noteTitleUpdateEventName,
   SERVER_NOTE_STATE_EVENT_NAME: serverUpdateEventName,
   UPDATE_EVENT_THROTTLE_TIME_IN_MS: updateEventThrottleIntervalInMs,
+  JOIN_ROOM_EVENT_NAME: joinRoomEventName,
 } = constants;
 
 let typingTimeout: NodeJS.Timeout;
 let isTyping = false;
 
-const NoteUpdateWindow = () => {
+function NoteUpdateWindow() {
   const [noteTitle, setNoteTitle] = useState<string>('');
   const [noteContent, setNoteContent] = useState<string>('');
   const [currentNote, setCurrentNote] = useState<NoteType>({
@@ -28,6 +30,7 @@ const NoteUpdateWindow = () => {
     content: '',
     id: '',
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const noteTitleRef = useRef(noteTitle);
   const noteContentRef = useRef(noteContent);
@@ -82,8 +85,11 @@ const NoteUpdateWindow = () => {
       const [note] = response.data;
       setCurrentNote(note);
       updateNoteState(note);
+      emitSocketEvent(joinRoomEventName, { noteId });
     } catch (err) {
       console.error('Error fetching note:', err);
+    } finally {
+      setIsLoading(false);
     }
   }, [searchParams]);
 
@@ -96,7 +102,7 @@ const NoteUpdateWindow = () => {
   // Create a throttled event emitter for real-time updates
   const createThrottledEventEmitter = (eventName: string) =>
     useCallback(
-      throttle((noteChangeObject: NoteChangeObject) => {
+      debounce((noteChangeObject: NoteChangeObject) => {
         emitSocketEvent(eventName, noteChangeObject);
       }, updateEventThrottleIntervalInMs),
       []
@@ -158,6 +164,7 @@ const NoteUpdateWindow = () => {
           placeholder="Note Name"
           onChange={handleNoteTitleChangeEvent}
           value={noteTitle}
+          disabled={isLoading}
         />
       </label>
       <br />
@@ -167,10 +174,11 @@ const NoteUpdateWindow = () => {
           placeholder="Type your note here."
           onChange={handleNoteContentChangeEvent}
           value={noteContent}
+          disabled={isLoading}
         />
       </label>
     </div>
   );
-};
+}
 
 export default NoteUpdateWindow;

@@ -4,7 +4,7 @@ import type { NoteType } from './types';
 
 const { BACKEND_SERVER } = constants;
 
-const  appSocketInstance: Socket | null = io(BACKEND_SERVER.ROOT, {
+const appSocketInstance: Socket | null = io(BACKEND_SERVER.ROOT, {
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
@@ -21,22 +21,28 @@ function emitSocketEvent(eventName: string, data: { [key: string]: string }) {
   appSocketInstance?.emit(eventName, data);
 }
 
-appSocketInstance?.on('disconnect', (reason: String) => {
-  if (reason === 'io server disconnect') {
-    reconnectToSocketInstance();
-  }
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    reconnectToSocketInstance()
-  }
-});
-
-window.addEventListener('online', reconnectToSocketInstance);
 
 function reconnectToSocketInstance(){
   if (!appSocketInstance?.connected) appSocketInstance?.connect();
 }
+
+
+function initializeSocketBehavior() {
+  appSocketInstance?.on('disconnect', (reason: String) => {
+    if (reason === 'io server disconnect') {
+      reconnectToSocketInstance();
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      reconnectToSocketInstance();
+    }
+  });
+
+  window.addEventListener('online', reconnectToSocketInstance);
+}
+
+initializeSocketBehavior();
 
 export { setSocketListener, emitSocketEvent };
