@@ -1,5 +1,4 @@
 import axios from 'axios';
-import throttle from 'lodash/throttle';
 import debounce from 'lodash/debounce';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -100,7 +99,7 @@ function NoteUpdateWindow() {
   }, [applyServerSideChanges, fetchNote]);
 
   // Create a throttled event emitter for real-time updates
-  const createThrottledEventEmitter = (eventName: string) =>
+  const createDebouncedEventEmitter = (eventName: string) =>
     useCallback(
       debounce((noteChangeObject: NoteChangeObject) => {
         emitSocketEvent(eventName, noteChangeObject);
@@ -108,10 +107,10 @@ function NoteUpdateWindow() {
       []
     );
 
-  const handleNoteTitleChange = createThrottledEventEmitter(
+  const handleNoteTitleChange = createDebouncedEventEmitter(
     noteTitleUpdateEventName
   );
-  const handleNoteContentChange = createThrottledEventEmitter(
+  const handleNoteContentChange = createDebouncedEventEmitter(
     noteContentUpdateEventName
   );
 
