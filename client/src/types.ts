@@ -1,4 +1,4 @@
-type noteType = { title?: string; content?: string; id?: string };
+type NoteType = { title?: string; content?: string; id?: string };
 
 type SavedUserNoteType = {
   _id: string;
@@ -9,4 +9,6 @@ type SavedUserNoteType = {
 
 type UserNotesType = SavedUserNoteType[];
 
-export type { noteType, UserNotesType };
+type NoteChangeObject = { updatedValue: string; noteId: string }
+
+export type { NoteType, UserNotesType, NoteChangeObject };

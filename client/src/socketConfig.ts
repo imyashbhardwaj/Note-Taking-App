@@ -1,6 +1,6 @@
 import { constants } from '../constants';
-import { noteType } from './types';
 import { io, Socket } from 'socket.io-client';
+import type { NoteType } from './types';
 
 const { BACKEND_SERVER } = constants;
 
@@ -12,7 +12,7 @@ const  appSocketInstance: Socket | null = io(BACKEND_SERVER.ROOT, {
     path: '/api/socket',
   }) as Socket;
 
-function setSocketListener(eventName: string, callback: (noteState: noteType) => void) {
+function setSocketListener(eventName: string, callback: (noteState: NoteType) => void) {
   appSocketInstance?.on(eventName, callback);
 }
 
