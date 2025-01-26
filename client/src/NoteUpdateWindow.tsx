@@ -57,7 +57,7 @@ function NoteUpdateWindow() {
     if (shouldIgnoreUpdate(noteContentRef, serverContent))
       delete noteState.content;
 
-    if (noteState.title || noteState.content) {
+    if (noteState.title != undefined || noteState.content != undefined) {
       updateNoteState(noteState);
     }
   }, []);
@@ -65,8 +65,8 @@ function NoteUpdateWindow() {
   // Update state with note changes
   const updateNoteState = (noteState: NoteType) => {
     const { title, content } = noteState;
-    if (title) setNoteTitle(title);
-    if (content) setNoteContent(content);
+    if (title != undefined) setNoteTitle(title);
+    if (content != undefined) setNoteContent(content);
   };
 
   // Fetch the note from the backend

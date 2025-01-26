@@ -73,6 +73,9 @@ function getLastSyncedNotesState() {
   return JSON.parse(JSON.stringify(lastSyncedNotesState));
 }
 
+setInterval(saveAllNotesState, dbStateUpdateTimeoutInMilliSeconds);
+setInterval(clearSavedNotesData, dbStateDeleteTimeoutInMilliSeconds);
+
 module.exports = {
   saveAllNotesState,
   handleNoteTitleNameUpdate,
@@ -82,6 +85,3 @@ module.exports = {
   getLastSyncedNotesState,
   updateLastSyncedNotesStateObject
 };
-
-setInterval(saveAllNotesState, dbStateUpdateTimeoutInMilliSeconds);
-setInterval(clearSavedNotesData, dbStateDeleteTimeoutInMilliSeconds);
