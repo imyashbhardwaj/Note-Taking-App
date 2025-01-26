@@ -41,15 +41,15 @@ function NoteUpdateWindow() {
   let isTyping = false;
 
   function applyServerSideChanges(noteState: noteType) {
-    console.log('got serverstate', noteState);
+    console.debug('got serverstate', noteState);
     const { title: serverSideTitle, content: serverSideContent } = noteState;
     const falseValues = [undefined, ''];
     const shouldIgnoreTitleUpdate =
       !falseValues.includes(serverSideTitle) &&
-      noteTitleRef.current.includes(serverSideTitle);
+      noteTitleRef.current.includes(serverSideTitle as string);
     const shouldIgnoreContentUpdate =
       !falseValues.includes(serverSideContent) &&
-      noteContentRef.current.includes(serverSideContent);
+      noteContentRef.current.includes(serverSideContent as string);
     if (shouldIgnoreTitleUpdate) {
       delete noteState.title;
     }
@@ -61,7 +61,6 @@ function NoteUpdateWindow() {
   }
 
   function setNoteState(noteState: noteType) {
-    console.log(`setting serverState ${JSON.stringify(noteState)}`);
     const { title, content } = noteState;
     if (title != undefined) setNoteTitle(title);
     if (content != undefined) setNoteContent(content);
@@ -75,8 +74,9 @@ function NoteUpdateWindow() {
   async function getNote() {
     const noteId = searchParams.get('id');
     try {
+      const getNoteRoute = `${BACKEND_SERVER.ROOT}${BACKEND_SERVER.API_ROUTE}${BACKEND_SERVER.GET_NOTE_ROUTE}`;
       const response = await axios.get(
-        `${BACKEND_SERVER.URL}${BACKEND_SERVER.GET_NOTE_ROUTE}`,
+        getNoteRoute,
         {
           params: { id: noteId },
         }
@@ -96,7 +96,7 @@ function NoteUpdateWindow() {
 
   const createThrottledEventEmitter = (eventName: string) => {
     clearTimeout(typingTimeout);
-    isTyping = true;
+    isTyping ||= true;
     typingTimeout = setTimeout(() => {
       isTyping = false;
     }, 300);

@@ -8,6 +8,8 @@ const {
 
 const noteTitleUpdateEventName = "Note Name Update";
 const noteContentUpdateEventName = "Note Content Update";
+const serverUpdateEventName = "Server State";
+
 let io;
 
 const clientStateUpdateIntervalInMilliSeconds  = 200;
@@ -53,8 +55,8 @@ function sendUpdatedStateToClients() {
     // Emit event to only specific rooms
     // i.e to specific users in that room or working on that note
     // this is an optimization to send only required data to each client
-    console.log("sending state to clients", updatedNoteProps, noteId);
-    io.in(noteId).emit("Server State", updatedNoteProps);
+    console.log("sending state to clients, noteId", updatedNoteProps, noteId);
+    io.in(noteId).emit(serverUpdateEventName, updatedNoteProps);
   });
 }
 module.exports = function socketWrapper(io) {

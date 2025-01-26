@@ -11,10 +11,12 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { constants } from '../constants';
+import type { UserNotesType } from './types';
 
 const { BACKEND_SERVER } = constants;
-function allUserNotes(authorId: string) {
-  const [userNotes, setUserNotes] = useState([]);
+
+function allUserNotes(props: { authorId: string }) {
+  const [userNotes, setUserNotes] = useState([] as UserNotesType);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -22,13 +24,10 @@ function allUserNotes(authorId: string) {
   useEffect(() => {
     async function fetchUserNotes() {
       try {
-        const getNotesRouteUrl = `${BACKEND_SERVER.URL}${BACKEND_SERVER.GET_NOTES_ROUTE}`;
-        const response = await axios.get(
-          getNotesRouteUrl,
-          {
-            params: { authorId },
-          }
-        );
+        const getNotesRouteUrl = `${BACKEND_SERVER.ROOT}${BACKEND_SERVER.API_ROUTE}${BACKEND_SERVER.GET_NOTES_ROUTE}`;
+        const response = await axios.get(getNotesRouteUrl, {
+          params: { authorId: props },
+        });
         setUserNotes(response.data); // Set the notes data
       } catch (err) {
         setError('Failed to fetch notes');
@@ -39,7 +38,7 @@ function allUserNotes(authorId: string) {
     }
 
     fetchUserNotes();
-  }, [authorId]);
+  }, [props]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;

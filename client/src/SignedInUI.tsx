@@ -13,14 +13,13 @@ function SignedInUI() {
 
   function createANewNote() {
     const authorId = user?.id;
-    const createNoteReqUrl = `${BACKEND_SERVER.URL}${BACKEND_SERVER.CREATE_NOTE_ROUTE}`;
+    const createNoteReqUrl = `${BACKEND_SERVER.ROOT}${BACKEND_SERVER.API_ROUTE}${BACKEND_SERVER.CREATE_NOTE_ROUTE}`;
     axios
       .post(createNoteReqUrl, { authorId })
       .then((response) => navigate(`/update?id=${response.data.id}`))
       .catch(console.log);
   }
 
-  console.log(user);
   return (
     <div id="notesView">
       <h1>
@@ -30,7 +29,7 @@ function SignedInUI() {
         </Button>
       </h1>
       <br></br><br></br>
-      <AllUserNotes authorId={user?.id} />
+      {user?.id && <AllUserNotes authorId={user.id} />}
     </div>
   );
 }
